@@ -54,7 +54,7 @@
               "required": ["rules"]
             },
             "clusterRoleBinding": {
-              "type": "object",
+              "type": "object, null",
               "properties": {
                 "name": { "type": "string" },
                 "roleRef": {

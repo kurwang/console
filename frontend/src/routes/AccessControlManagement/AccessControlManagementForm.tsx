@@ -5,18 +5,18 @@ import { AcmDataFormPage } from '../../components/AcmDataForm'
 import { FormData } from '../../components/AcmFormData'
 import { LostChangesContext } from '../../components/LostChanges'
 import { useTranslation } from '../../lib/acm-i18next'
+import { useQuery } from '../../lib/useQuery'
 import { NavigationPath, useBackCancelNavigation } from '../../NavigationPath'
 import { IResource, listGroups, listUsers } from '../../resources'
 import { AccessControl, AccessControlApiVersion, RoleBinding } from '../../resources/access-control'
 import { createResource, patchResource } from '../../resources/utils'
 import { AcmToastContext } from '../../ui-components'
 import { useAllClusters } from '../Infrastructure/Clusters/ManagedClusters/components/useAllClusters'
-import { useSearchCompleteLazyQuery } from '../Search/search-sdk/search-sdk'
 import { searchClient } from '../Search/search-sdk/search-client'
-import { useQuery } from '../../lib/useQuery'
-import schema from './schema.json'
-import { RoleBindingSection } from './RoleBindingSection'
+import { useSearchCompleteLazyQuery } from '../Search/search-sdk/search-sdk'
 import { RoleBindingHook } from './RoleBindingHook'
+import { RoleBindingSection } from './RoleBindingSection'
+import schema from './schema.json'
 
 const AccessControlManagementForm = ({
   isEditing,
@@ -67,17 +67,21 @@ const AccessControlManagementForm = ({
   // RoleBinding states
   const {
     selected: selectedRoleBindings,
-    setSelected: setSelectedRoleBindings,
+    setSelected: setRBSelected,
     selectedSubjectType: rbSelectedSubjectType,
     selectedSubjectNames: rbSelectedSubjectNames,
+    setSelectedSubjectNames: setRbSelectedSubjectNames,
     selectedRoleNames: rbSelectedRoleNames,
+    setSelectedRoleNames: setRbSelectedRoleNames,
     selectedNamespaces: rbSelectedNamespaces,
+    setSelectedNamespaces: setRbSelectedNamespaces,
     onNamespaceChange: onNamespaceChangeRB,
     onSubjectTypeChange: onSubjectTypeChangeRB,
     onSubjectNameChange: onSubjectNameChangeRB,
     onRoleChange: onRoleChangeRB,
   } = RoleBindingHook<RoleBinding>()
 
+  // ClusterRoleBinding states
   const {
     selectedSubjectType: crbSelectedSubjectType,
     selectedSubjectNames: crbSelectedSubjectNames,
@@ -95,24 +99,39 @@ const AccessControlManagementForm = ({
     setName(accessControl?.metadata?.name ?? '')
     setNamespace(accessControl?.metadata?.namespace ?? '')
     setCreatedDate(accessControl?.metadata?.creationTimestamp ?? '')
-    setSelectedRoleBindings((accessControl?.spec?.roleBindings ?? []) as RoleBinding[])
+  }, [accessControl?.metadata])
 
+  useEffect(() => {
+    setRBSelected((accessControl?.spec?.roleBindings ?? []) as RoleBinding[])
+    if (accessControl?.spec?.roleBindings) {
+      setRbSelectedSubjectNames([
+        ...new Set(
+          accessControl.spec.roleBindings
+            .map((rb) => rb.subject?.name)
+            .filter((name): name is string => name !== undefined)
+        ),
+      ])
+      setRbSelectedRoleNames([...new Set(accessControl.spec.roleBindings.map((rb) => rb.roleRef.name))])
+      setRbSelectedNamespaces([...new Set(accessControl.spec.roleBindings.map((rb) => rb.namespace))])
+    }
+  }, [
+    accessControl?.spec.roleBindings,
+    setRbSelectedNamespaces,
+    setRbSelectedRoleNames,
+    setRbSelectedSubjectNames,
+    setRBSelected,
+  ])
+
+  useEffect(() => {
     if (accessControl?.spec?.clusterRoleBinding) {
       setCrbSelectedSubjectNames([accessControl.spec.clusterRoleBinding.subject?.name ?? ''])
       setCrbSelectedRoleName(accessControl.spec.clusterRoleBinding.roleRef?.name ?? '')
     }
-  }, [
-    accessControl?.metadata,
-    accessControl?.spec.clusterRoleBinding,
-    accessControl?.spec?.roleBindings,
-    setCrbSelectedRoleName,
-    setCrbSelectedSubjectNames,
-    setSelectedRoleBindings,
-  ])
+  }, [accessControl?.spec.clusterRoleBinding, setCrbSelectedRoleName, setCrbSelectedSubjectNames])
 
   useEffect(() => {
     if (!isEditing && !isViewing && !selectedRoleBindings.length) {
-      setSelectedRoleBindings([
+      setRBSelected([
         {
           namespace,
           roleRef: {
@@ -128,7 +147,7 @@ const AccessControlManagementForm = ({
         },
       ])
     }
-  }, [isEditing, isViewing, namespace, selectedRoleBindings.length, setSelectedRoleBindings])
+  }, [isEditing, isViewing, namespace, selectedRoleBindings.length, setRBSelected])
 
   const [getSearchResults, { data }] = useSearchCompleteLazyQuery({
     client: process.env.NODE_ENV === 'test' ? undefined : searchClient,
@@ -217,7 +236,7 @@ const AccessControlManagementForm = ({
   const stateToSyncs = () => [
     { path: 'AccessControl[0].metadata.namespace', setState: setNamespace },
     { path: 'AccessControl[0].metadata.name', setState: setName },
-    { path: 'AccessControl[0].spec.roleBindings', setState: setSelectedRoleBindings },
+    { path: 'AccessControl[0].spec.roleBindings', setState: setRBSelected },
   ]
 
   const title = isViewing

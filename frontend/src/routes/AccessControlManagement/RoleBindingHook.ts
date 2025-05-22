@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-const RoleBindingHook = <Type>() => {
-  const [selected, setSelected] = useState<Type[]>([])
+const RoleBindingHook = <T>() => {
+  const [selected, setSelected] = useState<T[]>([])
   const [selectedSubjectType, setSelectedSubjectType] = useState<'User' | 'Group'>('User')
   const [selectedSubjectNames, setSelectedSubjectNames] = useState<string[]>([])
   const [selectedUsers, setSelectedUsers] = useState<string[]>([])
@@ -41,7 +41,9 @@ const RoleBindingHook = <Type>() => {
     selectedRoleName,
     setSelectedRoleName,
     selectedRoleNames,
+    setSelectedRoleNames,
     selectedNamespaces,
+    setSelectedNamespaces,
     onNamespaceChange,
     onSubjectTypeChange,
     onSubjectNameChange,

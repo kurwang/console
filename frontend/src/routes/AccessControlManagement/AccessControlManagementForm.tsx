@@ -16,6 +16,7 @@ import { searchClient } from '../Search/search-sdk/search-client'
 import { useQuery } from '../../lib/useQuery'
 import schema from './schema.json'
 import { RoleBindingSection } from './RoleBindingSection'
+import { RoleBindingHook } from './RoleBindingHook'
 
 const AccessControlManagementForm = ({
   isEditing,
@@ -64,20 +65,29 @@ const AccessControlManagementForm = ({
   const [name, setName] = useState('')
 
   // RoleBinding states
-  const [selectedRoleBindings, setSelectedRoleBindings] = useState<RoleBinding[]>([])
-  const [rbSelectedSubjectNames, setRbSelectedSubjectNames] = useState<string[]>([])
-  const [rbSelectedUsers, setRbSelectedUsers] = useState<string[]>([])
-  const [rbSelectedGroups, setRbSelectedGroups] = useState<string[]>([])
-  const [rbSelectedRoleNames, setRbSelectedRoleNames] = useState<string[]>([])
-  const [rbSelectedNamespaces, setRbSelectedNamespaces] = useState<string[]>([])
-  const [rbSelectedSubjectType, setRbSelectedSubjectType] = useState<'User' | 'Group'>('User')
+  const {
+    selected: selectedRoleBindings,
+    setSelected: setSelectedRoleBindings,
+    selectedSubjectType: rbSelectedSubjectType,
+    selectedSubjectNames: rbSelectedSubjectNames,
+    selectedRoleNames: rbSelectedRoleNames,
+    selectedNamespaces: rbSelectedNamespaces,
+    onNamespaceChange: onNamespaceChangeRB,
+    onSubjectTypeChange: onSubjectTypeChangeRB,
+    onSubjectNameChange: onSubjectNameChangeRB,
+    onRoleChange: onRoleChangeRB,
+  } = RoleBindingHook<RoleBinding>()
 
-  // ClusterRoleBinding states
-  const [crbSelectedSubjectNames, setCrbSelectedSubjectNames] = useState<string[]>([])
-  const [crbSelectedUsers, setCrbSelectedUsers] = useState<string[]>([])
-  const [crbSelectedGroups, setCrbSelectedGroups] = useState<string[]>([])
-  const [crbSelectedRoleName, setCrbSelectedRoleName] = useState<string>('')
-  const [crbSelectedSubjectType, setCrbSelectedSubjectType] = useState<'User' | 'Group'>('User')
+  const {
+    selectedSubjectType: crbSelectedSubjectType,
+    selectedSubjectNames: crbSelectedSubjectNames,
+    setSelectedSubjectNames: setCrbSelectedSubjectNames,
+    selectedRoleName: crbSelectedRoleName,
+    setSelectedRoleName: setCrbSelectedRoleName,
+    onSubjectTypeChange: onSubjectTypeChangeCRB,
+    onSubjectNameChange: onSubjectNameChangeCRB,
+    onRoleChange: onRoleChangeCRB,
+  } = RoleBindingHook<string>()
 
   const { submitForm } = useContext(LostChangesContext)
 
@@ -87,23 +97,18 @@ const AccessControlManagementForm = ({
     setCreatedDate(accessControl?.metadata?.creationTimestamp ?? '')
     setSelectedRoleBindings((accessControl?.spec?.roleBindings ?? []) as RoleBinding[])
 
-    if (accessControl?.spec?.roleBindings) {
-      setRbSelectedSubjectNames([
-        ...new Set(
-          accessControl.spec.roleBindings
-            .map((rb) => rb.subject?.name)
-            .filter((name): name is string => name !== undefined)
-        ),
-      ])
-      setRbSelectedRoleNames([...new Set(accessControl.spec.roleBindings.map((rb) => rb.roleRef.name))])
-      setRbSelectedNamespaces([...new Set(accessControl.spec.roleBindings.map((rb) => rb.namespace))])
-    }
-
     if (accessControl?.spec?.clusterRoleBinding) {
       setCrbSelectedSubjectNames([accessControl.spec.clusterRoleBinding.subject?.name ?? ''])
       setCrbSelectedRoleName(accessControl.spec.clusterRoleBinding.roleRef?.name ?? '')
     }
-  }, [accessControl?.metadata, accessControl?.spec.clusterRoleBinding, accessControl?.spec.roleBindings])
+  }, [
+    accessControl?.metadata,
+    accessControl?.spec.clusterRoleBinding,
+    accessControl?.spec?.roleBindings,
+    setCrbSelectedRoleName,
+    setCrbSelectedSubjectNames,
+    setSelectedRoleBindings,
+  ])
 
   useEffect(() => {
     if (!isEditing && !isViewing && !selectedRoleBindings.length) {
@@ -123,7 +128,7 @@ const AccessControlManagementForm = ({
         },
       ])
     }
-  }, [isEditing, isViewing, namespace, selectedRoleBindings.length])
+  }, [isEditing, isViewing, namespace, selectedRoleBindings.length, setSelectedRoleBindings])
 
   const [getSearchResults, { data }] = useSearchCompleteLazyQuery({
     client: process.env.NODE_ENV === 'test' ? undefined : searchClient,
@@ -146,25 +151,6 @@ const AccessControlManagementForm = ({
       },
     })
   }, [getSearchResults, namespace])
-
-  useEffect(() => {
-    switch (rbSelectedSubjectType) {
-      case 'Group':
-        setRbSelectedGroups(rbSelectedSubjectNames)
-        break
-      case 'User':
-        setRbSelectedUsers(rbSelectedSubjectNames)
-        break
-    }
-    switch (crbSelectedSubjectType) {
-      case 'Group':
-        setCrbSelectedGroups(crbSelectedSubjectNames)
-        break
-      case 'User':
-        setCrbSelectedUsers(crbSelectedSubjectNames)
-        break
-    }
-  }, [crbSelectedSubjectNames, crbSelectedSubjectType, rbSelectedSubjectNames, rbSelectedSubjectType])
 
   const namespaceItems: string[] = useMemo(
     () => data?.searchComplete?.filter((e) => e !== null) ?? [],
@@ -310,13 +296,10 @@ const AccessControlManagementForm = ({
           id: val.metadata.uid!,
           value: val.metadata.name!,
         })),
-        onNamespaceChange: (values) => setRbSelectedNamespaces(values),
-        onSubjectTypeChange: (value: string) => {
-          setRbSelectedSubjectNames(value === 'group' ? rbSelectedGroups : rbSelectedUsers)
-          setRbSelectedSubjectType(value === 'group' ? 'Group' : 'User')
-        },
-        onSubjectNameChange: (values) => setRbSelectedSubjectNames(values),
-        onRoleChange: (values) => setRbSelectedRoleNames(values),
+        onNamespaceChange: onNamespaceChangeRB,
+        onSubjectTypeChange: onSubjectTypeChangeRB,
+        onSubjectNameChange: onSubjectNameChangeRB,
+        onRoleChange: onRoleChangeRB,
       }),
 
       RoleBindingSection({
@@ -335,12 +318,9 @@ const AccessControlManagementForm = ({
           value: val.metadata.name!,
         })),
         onNamespaceChange: () => {},
-        onSubjectTypeChange: (value: string) => {
-          setCrbSelectedSubjectNames(value === 'group' ? crbSelectedGroups : crbSelectedUsers)
-          setCrbSelectedSubjectType(value === 'group' ? 'Group' : 'User')
-        },
-        onSubjectNameChange: (values) => setCrbSelectedSubjectNames(values),
-        onRoleChange: (values) => setCrbSelectedRoleName(values[0] || ''),
+        onSubjectTypeChange: onSubjectTypeChangeCRB,
+        onSubjectNameChange: onSubjectNameChangeCRB,
+        onRoleChange: onRoleChangeCRB,
       }),
     ],
 

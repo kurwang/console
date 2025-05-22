@@ -4,7 +4,7 @@ import { AcmLabels } from '../../ui-components'
 
 export interface RoleBindingSectionProps {
   title: string
-  idPrefix: 'rb' | 'crb'
+  idPrefix: string
   isViewing: boolean
   isRequired: boolean
   selectedNamespaces: string[]
@@ -49,7 +49,7 @@ export const RoleBindingSection = ({
         type: 'Multiselect' as const,
         label: t('Namespaces'),
         placeholder: t('Select or enter namespace'),
-        value: idPrefix === 'crb' ? ['All Namespaces'] : selectedNamespaces,
+        value: selectedNamespaces,
         onChange: onNamespaceChange,
         options: namespaceOptions,
         isRequired: isRequired,

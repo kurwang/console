@@ -276,7 +276,6 @@ const AccessControlManagementForm = ({
           },
         ],
       },
-
       RoleBindingSection({
         title: 'Role Bindings',
         idPrefix: 'rb',

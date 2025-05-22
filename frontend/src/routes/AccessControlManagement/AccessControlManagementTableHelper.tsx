@@ -140,9 +140,9 @@ const COLUMN_CELLS = {
     )
   },
   ROLES: (accessControl: AccessControl, t: TFunction) => {
-    const rollBindingRoles = accessControl.spec.roleBindings?.map((e) => e.roleRef.name) ?? []
-    const clusterRollBindingRole = accessControl.spec.clusterRoleBinding?.roleRef?.name
-    const roles = [...rollBindingRoles, clusterRollBindingRole].filter((role): role is string => role !== undefined)
+    const roleBindingRoles = accessControl.spec.roleBindings?.map((e) => e.roleRef.name) ?? []
+    const clusterRoleBindingRole = accessControl.spec.clusterRoleBinding?.roleRef?.name
+    const roles = [...roleBindingRoles, clusterRoleBindingRole].filter((role) => role !== undefined)
     return roles ? (
       <AcmLabels
         labels={roles}

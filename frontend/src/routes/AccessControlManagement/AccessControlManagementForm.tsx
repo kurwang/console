@@ -137,7 +137,7 @@ const AccessControlManagementForm = ({
           roleRef: {
             name: '',
             apiGroup: 'rbac.authorization.k8s.io',
-            kind: 'Role',
+            kind: 'ClusterRole',
           },
           subject: {
             name: '',
@@ -187,7 +187,7 @@ const AccessControlManagementForm = ({
           roleRef: {
             name: role,
             apiGroup: 'rbac.authorization.k8s.io',
-            kind: 'Role',
+            kind: 'ClusterRole',
           },
           subject: {
             name: user,

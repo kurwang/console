@@ -78,6 +78,7 @@ const AccessControlManagementForm = ({
   }, [groupsStartPolling, groupsStopPolling, usersStartPolling, usersStopPolling])
 
   // General ClusterPermission states
+  const [label, setLabel] = useState<Record<string, string>>({})
   const [namespace, setNamespace] = useState('')
   const [createdDate, setCreatedDate] = useState('')
   const [name, setName] = useState('')
@@ -114,6 +115,7 @@ const AccessControlManagementForm = ({
   const { submitForm } = useContext(LostChangesContext)
 
   useEffect(() => {
+    setLabel(accessControl?.metadata?.labels ?? {})
     setName(accessControl?.metadata?.name ?? '')
     setNamespace(accessControl?.metadata?.namespace ?? '')
     setCreatedDate(accessControl?.metadata?.creationTimestamp ?? '')
@@ -221,6 +223,7 @@ const AccessControlManagementForm = ({
         metadata: {
           name,
           namespace,
+          labels: label,
         },
         spec,
       },
@@ -237,6 +240,10 @@ const AccessControlManagementForm = ({
       {
         path: `${pathPrefix}[0].metadata.name`,
         setState: setName,
+      },
+      {
+        path: `${pathPrefix}[0].metadata.labels`,
+        setState: setLabel,
       },
     ]
     return syncs
@@ -313,6 +320,15 @@ const AccessControlManagementForm = ({
             isDisabled: false,
             isHidden: isCreatable || isEditing,
           },
+          // {
+          //   id: 'label',
+          //   type: 'Custom',
+          //   label: t('Labels'),
+          //   value: label,
+          //   onChange: setLabel,
+          //   isDisabled: false,
+          //   isHidden: isCreatable || isEditing,
+          // },
         ],
       },
       RoleBindingSection({
@@ -396,6 +412,7 @@ const AccessControlManagementForm = ({
         const metadata: AccessControl['metadata'] = accessControl.metadata
         patch.push({ op: 'replace', path: `/spec/roleBindings`, value: accessControl.spec.roleBindings })
         patch.push({ op: 'replace', path: `/spec/clusterRoleBinding`, value: accessControl.spec.clusterRoleBinding })
+        patch.push({ op: 'replace', path: `/metadata/labels`, value: accessControl.metadata?.labels })
         patchResource(accessControl, patch).promise.then(() => {
           toastContext.addAlert({
             title: t('Acccess Control updated'),

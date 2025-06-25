@@ -345,6 +345,12 @@ const useFilters = ({
         options: buildClusterOptions(Object.values(managedClusters)),
         tableFilterFn: filterByCluster,
       },
+      // {
+      //   id: 'clusterpermissionlabel',
+      //   label: t('ClusterPermissionLabel'),
+      //   options: buildOptions(accessControls?.flatMap((ac) => accessControlRoleBindingsFilter(ac, 'User')) ?? []),
+      //   tableFilterFn: createTableFilterFn('User'),
+      // },
       {
         id: 'user',
         label: t('access.add.user'),

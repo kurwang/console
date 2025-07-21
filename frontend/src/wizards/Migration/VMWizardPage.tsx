@@ -51,7 +51,6 @@ export function VMWizardPage() {
   const { id } = useParams()
   useEffect(() => {
     if (id) {
-      //console.log('test' + id)
       const urlString = id.split('+')
       setSrcCluster(urlString[urlString.length - 2])
       setSrcNamespace(urlString[urlString.length - 1])
@@ -100,16 +99,6 @@ export function VMWizardPage() {
     value: namespace,
     text: namespace,
   }))
-
-  // const clusterOptions = [
-  //   { id: 'c1', value: 'dev', text: 'dev-cluster' },
-  //   { id: 'c2', value: 'prod', text: 'prod-cluster' },
-  // ]
-
-  // const namespaceOptions = [
-  //   { id: '1', value: '1', text: '1' },
-  //   { id: '2', value: '2', text: '2' },
-  // ]
 
   const networkOptions = [
     { id: 'network1', value: 'network1', text: 'network1' },

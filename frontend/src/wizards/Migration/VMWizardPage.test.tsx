@@ -1,5 +1,4 @@
 // /* Copyright Contributors to the Open Cluster Management project */
-// import VMWizardPage from './VMWizardpage'
 import '@testing-library/jest-dom'
 import { VMWizardPage } from './VMWizardPage'
 import { render, screen, within } from '@testing-library/react'
@@ -11,11 +10,6 @@ const mockParams = jest.fn()
 
 jest.mock('react-router-dom-v5-compat', () => ({
   __esModule: true,
-
-  // srcnamespace/uid+srcnamespace+srccluster
-  // sno-2-b9657/70b7f458-d6ef-4d98-9b0b-e9c5a5f260d0+sno-2-b9657+dev-sno-2-b9657
-
-  // useParams: () => ({ id: 'namespace-1/a1+namespace-1+cluster-1' }),
   useParams: () => mockParams(),
   useNavigate: () => mockNavigate,
 }))
@@ -99,7 +93,6 @@ jest.mock('../../routes/Search/search-sdk/search-client', () => ({
 
 // Start tests
 describe('VMWizardPage', () => {
-  //const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
   const consoleSpy = jest.spyOn(console, 'log')
 
   afterEach(() => {

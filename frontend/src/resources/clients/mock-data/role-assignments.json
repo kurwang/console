@@ -3,10 +3,12 @@
     "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
     "kind": "RoleAssignment",
     "metadata": {
-      "name": "alice-admin-assignment"
+      "name": "alice-admin-assignment",
+      "uid": "mock-uid-alice-admin-assignment",
+      "creationTimestamp": "2024-01-15T10:30:00Z"
     },
     "spec": {
-      "roles": ["kubevirt.io:admin"],
+      "roles": ["cluster-admin"],
       "subjects": [
         {
           "kind": "User",
@@ -16,11 +18,11 @@
       "clusters": [
         {
           "name": "production-cluster",
-          "namespaces": ["*"]
+          "namespaces": ["default", "kube-system"]
         },
         {
           "name": "staging-cluster",
-          "namespaces": ["kubevirt-staging", "vm-workloads"]
+          "namespaces": ["staging-apps", "monitoring"]
         }
       ]
     }
@@ -29,81 +31,22 @@
     "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
     "kind": "RoleAssignment",
     "metadata": {
-      "name": "kubevirt-admins-multi-cluster"
+      "name": "alice-kubevirt-assignment",
+      "uid": "mock-uid-alice-kubevirt-assignment",
+      "creationTimestamp": "2024-01-16T14:20:00Z"
     },
     "spec": {
-      "roles": ["kubevirt.io:admin", "live-migration-admin"],
-      "subjects": [
-        {
-          "kind": "Group",
-          "name": "kubevirt-admins"
-        },
-        {
-          "kind": "User",
-          "name": "admin.user"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["kubevirt-production"]
-        },
-        {
-          "name": "development-cluster",
-          "namespaces": ["*"]
-        },
-        {
-          "name": "testing-cluster",
-          "namespaces": ["kubevirt-test", "vm-test", "storage-test"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "admin-sa-management"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:admin"],
-      "subjects": [
-        {
-          "kind": "ServiceAccount",
-          "name": "kubevirt-admin-sa",
-          "namespace": "kubevirt-system"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "management-cluster",
-          "namespaces": ["kubevirt-system"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "bob-edit-assignment"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:edit"],
+      "roles": ["kubevirt:admin"],
       "subjects": [
         {
           "kind": "User",
-          "name": "bob.levy"
+          "name": "alice.trask"
         }
       ],
       "clusters": [
         {
           "name": "development-cluster",
-          "namespaces": ["kubevirt-dev"]
-        },
-        {
-          "name": "staging-cluster",
-          "namespaces": ["kubevirt-staging", "vm-staging"]
+          "namespaces": ["kubevirt", "vm-workloads"]
         }
       ]
     }
@@ -112,258 +55,25 @@
     "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
     "kind": "RoleAssignment",
     "metadata": {
-      "name": "developers-development-edit"
+      "name": "alice-network-assignment",
+      "uid": "mock-uid-alice-network-assignment",
+      "creationTimestamp": "2024-01-17T09:15:00Z"
     },
     "spec": {
-      "roles": ["kubevirt.io:edit", "network-admin", "storage-admin"],
-      "subjects": [
-        {
-          "kind": "Group",
-          "name": "developers"
-        },
-        {
-          "kind": "User",
-          "name": "intern.dev"
-        },
-        {
-          "kind": "User",
-          "name": "junior.dev"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "development-cluster",
-          "namespaces": ["kubevirt-dev", "vm-dev", "storage-dev", "networking-dev"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "operator-multi-cluster-edit"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:edit"],
-      "subjects": [
-        {
-          "kind": "ServiceAccount",
-          "name": "kubevirt-operator",
-          "namespace": "kubevirt-system"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["kubevirt-production"]
-        },
-        {
-          "name": "staging-cluster",
-          "namespaces": ["kubevirt-staging"]
-        },
-        {
-          "name": "development-cluster",
-          "namespaces": ["kubevirt-system"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "charlie-edge-edit"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:edit"],
+      "roles": ["network:operator"],
       "subjects": [
         {
           "kind": "User",
-          "name": "charlie.cranston"
+          "name": "alice.trask"
         }
       ],
       "clusters": [
         {
           "name": "edge-cluster-1",
-          "namespaces": ["*"]
+          "namespaces": ["networking", "istio-system"]
         },
         {
           "name": "edge-cluster-2",
-          "namespaces": ["edge-workloads"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "sre-team-view-all"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:view"],
-      "subjects": [
-        {
-          "kind": "Group",
-          "name": "sre-team"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["*"]
-        },
-        {
-          "name": "staging-cluster",
-          "namespaces": ["*"]
-        },
-        {
-          "name": "development-cluster",
-          "namespaces": ["*"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "sarah-multi-cluster-view"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:view"],
-      "subjects": [
-        {
-          "kind": "User",
-          "name": "sarah.jones"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["kubevirt-production", "monitoring", "logging"]
-        },
-        {
-          "name": "staging-cluster",
-          "namespaces": ["kubevirt-staging"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "prometheus-monitoring-view"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:view"],
-      "subjects": [
-        {
-          "kind": "ServiceAccount",
-          "name": "prometheus-kubevirt",
-          "namespace": "monitoring"
-        },
-        {
-          "kind": "ServiceAccount",
-          "name": "grafana-dashboard",
-          "namespace": "grafana"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["kubevirt-production", "monitoring"]
-        },
-        {
-          "name": "staging-cluster",
-          "namespaces": ["kubevirt-staging", "monitoring"]
-        },
-        {
-          "name": "development-cluster",
-          "namespaces": ["kubevirt-dev", "monitoring"]
-        },
-        {
-          "name": "edge-cluster-1",
-          "namespaces": ["monitoring"]
-        },
-        {
-          "name": "monitoring-cluster",
-          "namespaces": ["grafana", "dashboards"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "david-analytics-view"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:view"],
-      "subjects": [
-        {
-          "kind": "User",
-          "name": "david.brown"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "analytics-cluster",
-          "namespaces": ["kubevirt-analytics", "data-processing", "reporting", "dashboards", "metrics"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "security-auditors-view"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:view"],
-      "subjects": [
-        {
-          "kind": "Group",
-          "name": "security-auditors"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["kubevirt-production"]
-        },
-        {
-          "name": "security-cluster",
-          "namespaces": ["*"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "network-admin-special"
-    },
-    "spec": {
-      "roles": ["network-admin", "kubevirt.io:admin"],
-      "subjects": [
-        {
-          "kind": "User",
-          "name": "network.admin"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["networking", "ingress"]
-        },
-        {
-          "name": "edge-cluster-1",
           "namespaces": ["networking"]
         }
       ]
@@ -373,55 +83,22 @@
     "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
     "kind": "RoleAssignment",
     "metadata": {
-      "name": "storage-team-assignment"
+      "name": "alice-storage-assignment",
+      "uid": "mock-uid-alice-storage-assignment",
+      "creationTimestamp": "2024-01-18T11:45:00Z"
     },
     "spec": {
-      "roles": ["storage-admin", "kubevirt.io:edit"],
-      "subjects": [
-        {
-          "kind": "Group",
-          "name": "storage-team"
-        },
-        {
-          "kind": "ServiceAccount",
-          "name": "csi-driver",
-          "namespace": "storage-system"
-        }
-      ],
-      "clusters": [
-        {
-          "name": "production-cluster",
-          "namespaces": ["storage-system", "csi"]
-        },
-        {
-          "name": "staging-cluster",
-          "namespaces": ["storage-system"]
-        },
-        {
-          "name": "development-cluster",
-          "namespaces": ["storage-dev"]
-        }
-      ]
-    }
-  },
-  {
-    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
-    "kind": "RoleAssignment",
-    "metadata": {
-      "name": "shared-name-user-assignment"
-    },
-    "spec": {
-      "roles": ["kubevirt.io:edit"],
+      "roles": ["storage:admin"],
       "subjects": [
         {
           "kind": "User",
-          "name": "same.name"
+          "name": "alice.trask"
         }
       ],
       "clusters": [
         {
-          "name": "production-cluster",
-          "namespaces": ["shared-workloads"]
+          "name": "storage-cluster",
+          "namespaces": ["ceph", "rook-system", "persistent-volumes"]
         }
       ]
     }
@@ -430,21 +107,280 @@
     "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
     "kind": "RoleAssignment",
     "metadata": {
-      "name": "shared-name-sa-assignment"
+      "name": "alice-monitoring-assignment",
+      "uid": "mock-uid-alice-monitoring-assignment",
+      "creationTimestamp": "2024-01-19T16:30:00Z"
     },
     "spec": {
-      "roles": ["kubevirt.io:view"],
+      "roles": ["monitoring:viewer"],
       "subjects": [
         {
-          "kind": "ServiceAccount",
-          "name": "same.name",
-          "namespace": "automation"
+          "kind": "User",
+          "name": "alice.trask"
         }
       ],
       "clusters": [
         {
+          "name": "production-cluster",
+          "namespaces": ["prometheus", "grafana", "alertmanager"]
+        },
+        {
           "name": "staging-cluster",
-          "namespaces": ["automation", "shared-workloads"]
+          "namespaces": ["monitoring-staging"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "alice-multi-cluster-assignment",
+      "uid": "mock-uid-alice-multi-cluster-assignment",
+      "creationTimestamp": "2024-01-20T10:45:00Z"
+    },
+    "spec": {
+      "roles": ["platform:operator", "security:admin"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "alice.trask"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["security", "monitoring", "logging", "backup", "disaster-recovery"]
+        },
+        {
+          "name": "staging-cluster",
+          "namespaces": ["security-staging", "testing", "qa", "integration"]
+        },
+        {
+          "name": "development-cluster",
+          "namespaces": ["dev-security", "sandbox", "experiments", "prototypes"]
+        },
+        {
+          "name": "edge-cluster-1",
+          "namespaces": ["edge-security", "iot-workloads", "edge-analytics"]
+        },
+        {
+          "name": "edge-cluster-2",
+          "namespaces": ["edge-security", "sensor-data", "real-time-processing"]
+        },
+        {
+          "name": "edge-cluster-3",
+          "namespaces": ["edge-security", "ml-inference", "data-collection"]
+        },
+        {
+          "name": "regional-cluster-east",
+          "namespaces": ["regional-security", "compliance", "audit", "governance"]
+        },
+        {
+          "name": "regional-cluster-west",
+          "namespaces": ["regional-security", "compliance", "audit", "governance"]
+        },
+        {
+          "name": "regional-cluster-central",
+          "namespaces": ["regional-security", "compliance", "audit", "governance"]
+        },
+        {
+          "name": "backup-cluster",
+          "namespaces": ["backup-security", "data-protection", "archival"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "alice-mixed-workloads-assignment",
+      "uid": "mock-uid-alice-mixed-workloads-assignment",
+      "creationTimestamp": "2024-01-21T08:15:00Z"
+    },
+    "spec": {
+      "roles": ["devops:lead", "ci-cd:admin", "monitoring:operator", "storage:viewer"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "alice.trask"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "ci-cd-cluster",
+          "namespaces": [
+            "jenkins",
+            "tekton",
+            "argocd",
+            "gitlab-runner",
+            "sonarqube",
+            "nexus",
+            "harbor",
+            "trivy",
+            "vault"
+          ]
+        },
+        {
+          "name": "microservices-cluster",
+          "namespaces": [
+            "api-gateway",
+            "user-service",
+            "payment-service",
+            "notification-service",
+            "inventory-service",
+            "shipping-service",
+            "cart-service"
+          ]
+        },
+        {
+          "name": "data-platform-cluster",
+          "namespaces": [
+            "kafka",
+            "elasticsearch",
+            "kibana",
+            "logstash",
+            "redis",
+            "mongodb",
+            "postgresql",
+            "airflow",
+            "spark",
+            "flink",
+            "jupyter",
+            "mlflow"
+          ]
+        },
+        {
+          "name": "gaming-cluster",
+          "namespaces": ["game-backend", "player-stats", "leaderboards", "matchmaking", "chat-service", "analytics"]
+        },
+        {
+          "name": "iot-platform-cluster",
+          "namespaces": [
+            "device-registry",
+            "telemetry",
+            "command-control",
+            "firmware-updates",
+            "device-shadows",
+            "rules-engine"
+          ]
+        },
+        {
+          "name": "media-processing-cluster",
+          "namespaces": [
+            "video-encoding",
+            "image-processing",
+            "cdn",
+            "streaming",
+            "transcoding",
+            "thumbnail-generation",
+            "watermarking"
+          ]
+        },
+        {
+          "name": "financial-cluster",
+          "namespaces": [
+            "trading-engine",
+            "risk-management",
+            "compliance",
+            "fraud-detection",
+            "reporting",
+            "audit-logs"
+          ]
+        },
+        {
+          "name": "healthcare-cluster",
+          "namespaces": [
+            "patient-records",
+            "appointment-system",
+            "billing",
+            "pharmacy",
+            "lab-results",
+            "imaging",
+            "telemedicine",
+            "hipaa-compliance"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "bob-edit-assignment",
+      "uid": "mock-uid-bob-edit-assignment",
+      "creationTimestamp": "2024-01-16T14:20:00Z"
+    },
+    "spec": {
+      "roles": ["edit"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "bob.levy"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "development-cluster",
+          "namespaces": ["default", "testing"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "charlie-view-assignment",
+      "uid": "mock-uid-charlie-view-assignment",
+      "creationTimestamp": "2024-01-17T12:00:00Z"
+    },
+    "spec": {
+      "roles": ["view"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "charlie.chen"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["monitoring"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "sarah-network-admin-assignment",
+      "uid": "mock-uid-network-admin-assignment-sarah",
+      "creationTimestamp": "2024-01-18T14:20:00Z"
+    },
+    "spec": {
+      "roles": ["network:admin"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "sarah.jones"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "edge-cluster-1",
+          "namespaces": ["networking", "security"]
+        },
+        {
+          "name": "edge-cluster-2",
+          "namespaces": ["networking"]
+        },
+        {
+          "name": "staging-cluster",
+          "namespaces": ["network-staging"]
         }
       ]
     }

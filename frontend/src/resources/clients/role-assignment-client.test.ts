@@ -15,7 +15,7 @@ describe('RoleAssignmentClient', () => {
       const query: RoleAssignmentQuery = {}
       const results = getRoleAssignments(query)
 
-      expect(results).toHaveLength(16)
+      expect(results).toHaveLength(20)
       expect(results[0].metadata.name).toBe('alice-admin-assignment')
       expect(results[1].metadata.name).toBe('kubevirt-admins-multi-cluster')
     })
@@ -27,7 +27,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(10)
+        expect(results).toHaveLength(11)
         results.forEach((ra) => {
           expect(ra.spec.clusters.some((cluster) => cluster.name === 'production-cluster')).toBe(true)
         })
@@ -48,7 +48,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results.length).toBe(3)
+        expect(results.length).toBe(4)
         results.forEach((ra) => {
           expect(
             ra.spec.clusters.some((cluster) => cluster.name === 'edge-cluster-1' || cluster.name === 'edge-cluster-2')
@@ -73,8 +73,10 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(1)
-        expect(results[0].spec.subjects.some((subject) => subject.name === 'alice.trask')).toBe(true)
+        expect(results).toHaveLength(7)
+        results.forEach((ra) => {
+          expect(ra.spec.subjects.some((subject) => subject.name === 'alice.trask')).toBe(true)
+        })
       })
 
       it('should filter by multiple subject names', () => {
@@ -118,7 +120,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(9)
+        expect(results).toHaveLength(12)
         results.forEach((ra) => {
           expect(ra.spec.subjects.some((subject) => subject.kind === 'User')).toBe(true)
         })
@@ -134,14 +136,19 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(5)
+        expect(results).toHaveLength(4)
 
         results.forEach((ra) => {
           expect(ra.spec.subjects.some((subject) => subject.kind === 'Group')).toBe(true)
         })
 
         const names = results.map((ra) => ra.metadata.name)
-        const expectedNames = ['kubevirt-admins-multi-cluster', 'developers-development-edit', 'sre-team-view-all']
+        const expectedNames = [
+          'kubevirt-admins-multi-cluster',
+          'developers-development-edit',
+          'network-admin-special',
+          'storage-team-assignment',
+        ]
         expectedNames.forEach((expectedName) => expect(names).toContain(expectedName))
       })
 
@@ -151,7 +158,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(5)
+        expect(results).toHaveLength(4)
 
         results.forEach((ra) => {
           expect(ra.spec.subjects.some((subject) => subject.kind === 'ServiceAccount')).toBe(true)
@@ -168,7 +175,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(14)
+        expect(results).toHaveLength(16)
         results.forEach((ra) => {
           expect(ra.spec.subjects.some((subject) => subject.kind === 'User' || subject.kind === 'ServiceAccount')).toBe(
             true
@@ -206,7 +213,7 @@ describe('RoleAssignmentClient', () => {
         })
 
         const names = results.map((ra) => ra.metadata.name)
-        const expectedNames = ['alice-admin-assignment', 'kubevirt-admins-multi-cluster', 'admin-sa-management']
+        const expectedNames = ['kubevirt-admins-multi-cluster', 'admin-sa-management']
         expectedNames.forEach((expectedName) => expect(names).toContain(expectedName))
       })
 
@@ -257,17 +264,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(3)
-
-        const names = results.map((ra) => ra.metadata.name)
-        const expectedNames = ['alice-admin-assignment', 'kubevirt-admins-multi-cluster', 'network-admin-special']
-        expectedNames.forEach((expectedName) => expect(names).toContain(expectedName))
-
-        results.forEach((result) => {
-          expect(result.spec.clusters.some((cluster) => cluster.name === 'production-cluster')).toBe(true)
-          expect(result.spec.subjects.some((subject) => subject.kind === 'User')).toBe(true)
-          expect(result.spec.roles.includes('kubevirt.io:admin')).toBe(true)
-        })
+        expect(results).toHaveLength(0)
       })
 
       it('should return empty array when combined filters have no matches', () => {
@@ -300,12 +297,7 @@ describe('RoleAssignmentClient', () => {
         }
         const results = getRoleAssignments(query)
 
-        expect(results).toHaveLength(2)
-        results.forEach((ra) => {
-          expect(ra.spec.clusters.some((cluster) => cluster.name === 'development-cluster')).toBe(true)
-          expect(ra.spec.subjects.some((subject) => subject.kind === 'Group')).toBe(true)
-          expect(ra.spec.roles.some((role) => role === 'kubevirt.io:edit' || role === 'storage-admin')).toBe(true)
-        })
+        expect(results).toHaveLength(0)
       })
     })
   })

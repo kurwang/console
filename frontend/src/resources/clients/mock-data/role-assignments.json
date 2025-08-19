@@ -31,6 +31,34 @@
     "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
     "kind": "RoleAssignment",
     "metadata": {
+      "name": "kubevirt-admins-multi-cluster",
+      "uid": "mock-uid-kubevirt-admins-multi-cluster",
+      "creationTimestamp": "2024-01-15T10:31:00Z"
+    },
+    "spec": {
+      "roles": ["live-migration-admin", "kubevirt.io:admin"],
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "kubevirt-admins"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["kubevirt", "vm-workloads"]
+        },
+        {
+          "name": "staging-cluster",
+          "namespaces": ["kubevirt-staging"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
       "name": "alice-kubevirt-assignment",
       "uid": "mock-uid-alice-kubevirt-assignment",
       "creationTimestamp": "2024-01-16T14:20:00Z"
@@ -381,6 +409,226 @@
         {
           "name": "staging-cluster",
           "namespaces": ["network-staging"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "charlie-edge-edit",
+      "uid": "mock-uid-charlie-edge-edit",
+      "creationTimestamp": "2024-01-17T13:00:00Z"
+    },
+    "spec": {
+      "roles": ["edit"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "charlie.cranston"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "edge-cluster-1",
+          "namespaces": ["default", "applications"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "admin-sa-management",
+      "uid": "mock-uid-admin-sa-management",
+      "creationTimestamp": "2024-01-18T09:00:00Z"
+    },
+    "spec": {
+      "roles": ["kubevirt.io:admin"],
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "kubevirt-admin-sa"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["kubevirt", "system"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "operator-multi-cluster-edit",
+      "uid": "mock-uid-operator-multi-cluster-edit",
+      "creationTimestamp": "2024-01-18T10:00:00Z"
+    },
+    "spec": {
+      "roles": ["edit"],
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "cluster-operator"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["operators", "system"]
+        },
+        {
+          "name": "staging-cluster",
+          "namespaces": ["operators"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "prometheus-monitoring-view",
+      "uid": "mock-uid-prometheus-monitoring-view",
+      "creationTimestamp": "2024-01-18T11:00:00Z"
+    },
+    "spec": {
+      "roles": ["view"],
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "prometheus-sa"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["monitoring", "prometheus"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "developers-development-edit",
+      "uid": "mock-uid-developers-development-edit",
+      "creationTimestamp": "2024-01-19T09:00:00Z"
+    },
+    "spec": {
+      "roles": ["network-admin"],
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "developers"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "development-cluster",
+          "namespaces": ["default", "apps"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "network-admin-special",
+      "uid": "mock-uid-network-admin-special",
+      "creationTimestamp": "2024-01-19T10:00:00Z"
+    },
+    "spec": {
+      "roles": ["network-admin"],
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "network-team"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["networking", "istio-system"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "storage-team-assignment",
+      "uid": "mock-uid-storage-team-assignment",
+      "creationTimestamp": "2024-01-19T11:00:00Z"
+    },
+    "spec": {
+      "roles": ["storage-admin"],
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "storage-team"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["storage", "ceph"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "shared-name-user-assignment",
+      "uid": "mock-uid-shared-name-user-assignment",
+      "creationTimestamp": "2024-01-19T12:00:00Z"
+    },
+    "spec": {
+      "roles": ["view"],
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "same.name"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "production-cluster",
+          "namespaces": ["default"]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "shared-name-sa-assignment",
+      "uid": "mock-uid-shared-name-sa-assignment",
+      "creationTimestamp": "2024-01-19T13:00:00Z"
+    },
+    "spec": {
+      "roles": ["edit"],
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "same.name"
+        }
+      ],
+      "clusters": [
+        {
+          "name": "staging-cluster",
+          "namespaces": ["default"]
         }
       ]
     }
